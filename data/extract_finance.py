@@ -13,7 +13,7 @@ companies = {
     "Yansab": "2290.SR",
     "Sipchem": "2310.SR",
     "Saudi_Kayan": "2350.SR",
-    "Advanced": "2330.SR",
+    "Advanced_Petrochemical_Company" : "2330.SR",
     "Petro_Rabigh": "2380.SR"
 }
 
