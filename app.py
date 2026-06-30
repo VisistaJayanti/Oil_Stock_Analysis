@@ -19,7 +19,7 @@ from llm.analyzer import analyze
 # =====================================================
 
 st.set_page_config(
-    page_title="Saudi Petrochemical Market Intelligence",
+    page_title="Petrochemical Stock Analyzer",
     page_icon="📈",
     layout="wide"
 )
@@ -71,9 +71,9 @@ page = st.sidebar.radio(
     "",
     [
         "Dashboard",
-        "Correlation Analysis",
+        "Correlation",
         "Visualizations",
-        "Hormuz Snapshot",
+        "Hormuz Strait Status",
         "AI Market Assistant"
     ]
 )
@@ -84,7 +84,7 @@ page = st.sidebar.radio(
 
 if page == "Dashboard":
 
-    st.title("Saudi Petrochemical Market Intelligence")
+    st.title("Petrochemical Stock Analyzer")
 
     st.markdown(
         """
@@ -173,9 +173,9 @@ elif page == "Visualizations":
 # Hormuz
 # =====================================================
 
-elif page == "Hormuz Snapshot":
+elif page == "Strait of Hormuz":
 
-    st.title("Strait of Hormuz Snapshot")
+    st.title("Strait of Hormuz Status")
 
     st.json(hormuz)
 
