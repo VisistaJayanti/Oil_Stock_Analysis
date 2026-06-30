@@ -1,20 +1,3 @@
-"""
-correlation.py
-
-Purpose
--------
-Perform statistical analysis on the master dataset.
-
-Outputs
--------
-summary_statistics.csv
-pearson_correlation.csv
-spearman_correlation.csv
-daily_returns.csv
-pearson_returns.csv
-brent_ranking.csv
-"""
-
 from pathlib import Path
 import pandas as pd
 
@@ -31,10 +14,7 @@ MASTER_FILE = PROCESSED_DIR / "master_dataset.csv"
 SUMMARY_FILE = PROCESSED_DIR / "summary_statistics.csv"
 PEARSON_FILE = PROCESSED_DIR / "pearson_correlation.csv"
 SPEARMAN_FILE = PROCESSED_DIR / "spearman_correlation.csv"
-RETURNS_FILE = PROCESSED_DIR / "daily_returns.csv"
-RETURNS_CORR_FILE = PROCESSED_DIR / "pearson_returns.csv"
 RANKING_FILE = PROCESSED_DIR / "brent_ranking.csv"
-
 
 # ==========================================================
 # Load Dataset
@@ -72,22 +52,22 @@ def generate_summary(df):
 
 
 # ==========================================================
-# Pearson Correlation (Prices)
+# Pearson Correlation
 # ==========================================================
 
 def pearson_correlation(df):
 
-    print("\nComputing Pearson correlation (Prices)...")
+    print("\nComputing Pearson correlation...")
 
     numeric_df = df.drop(columns=["Date"])
 
-    corr = numeric_df.corr(method="pearson")
+    pearson = numeric_df.corr(method="pearson")
 
-    corr.to_csv(PEARSON_FILE)
+    pearson.to_csv(PEARSON_FILE)
 
     print(f"Saved Pearson correlation matrix to:\n{PEARSON_FILE}")
 
-    return corr
+    return pearson
 
 
 # ==========================================================
@@ -100,71 +80,25 @@ def spearman_correlation(df):
 
     numeric_df = df.drop(columns=["Date"])
 
-    corr = numeric_df.corr(method="spearman")
+    spearman = numeric_df.corr(method="spearman")
 
-    corr.to_csv(SPEARMAN_FILE)
+    spearman.to_csv(SPEARMAN_FILE)
 
     print(f"Saved Spearman correlation matrix to:\n{SPEARMAN_FILE}")
 
-    return corr
-
-
-# ==========================================================
-# Daily Returns
-# ==========================================================
-
-def calculate_returns(df):
-
-    print("\nCalculating daily percentage returns...")
-
-    returns = df.copy()
-
-    numeric_cols = returns.columns.drop("Date")
-
-    returns[numeric_cols] = (
-        returns[numeric_cols]
-        .pct_change()
-        * 100
-    )
-
-    returns = returns.dropna()
-
-    returns.to_csv(RETURNS_FILE, index=False)
-
-    print(f"Saved daily returns to:\n{RETURNS_FILE}")
-
-    return returns
-
-
-# ==========================================================
-# Pearson Correlation (Returns)
-# ==========================================================
-
-def pearson_returns(returns_df):
-
-    print("\nComputing Pearson correlation (Returns)...")
-
-    numeric_df = returns_df.drop(columns=["Date"])
-
-    corr = numeric_df.corr(method="pearson")
-
-    corr.to_csv(RETURNS_CORR_FILE)
-
-    print(f"Saved return correlation matrix to:\n{RETURNS_CORR_FILE}")
-
-    return corr
+    return spearman
 
 
 # ==========================================================
 # Brent Ranking
 # ==========================================================
 
-def brent_ranking(return_corr):
+def brent_ranking(pearson):
 
-    print("\nRanking companies by Brent return correlation...")
+    print("\nRanking companies by Brent correlation...")
 
     ranking = (
-        return_corr["Brent"]
+        pearson["Brent"]
         .drop("Brent")
         .sort_values(ascending=False)
         .reset_index()
@@ -193,11 +127,11 @@ def print_report(summary, ranking):
 
     print(summary[["mean", "std", "min", "max"]])
 
-    print("\nCorrelation of Daily Returns with Brent")
+    print("\nCompany Correlation with Brent")
 
     print(ranking)
 
-    print("\nMost Sensitive Company")
+    print("\nMost Correlated Company")
 
     print(
         f"{ranking.iloc[0]['Company']} "
@@ -219,22 +153,16 @@ def main():
     # Summary statistics
     summary = generate_summary(df)
 
-    # Correlation using prices
-    pearson_prices = pearson_correlation(df)
+    # Pearson correlation
+    pearson = pearson_correlation(df)
 
-    # Spearman
+    # Spearman correlation
     spearman = spearman_correlation(df)
 
-    # Daily Returns
-    returns = calculate_returns(df)
+    # Rank companies
+    ranking = brent_ranking(pearson)
 
-    # Correlation using returns
-    pearson_returns_corr = pearson_returns(returns)
-
-    # Rank companies using return correlation
-    ranking = brent_ranking(pearson_returns_corr)
-
-    # Print report
+    # Console report
     print_report(summary, ranking)
 
 
